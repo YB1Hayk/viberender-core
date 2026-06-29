@@ -7,31 +7,23 @@ on:
     branches: [main, master]
 
 jobs:
-  build:
-    name: Build & Type Check
+  contracts:
+    name: Compile & Test Contracts
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
+          cache: npm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
-      - name: Type check
-        run: pnpm exec tsc --noEmit
+      - name: Compile contracts
+        run: npm run compile
 
-      - name: Build
-        run: pnpm run build
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_WALLETCONNECT_PROJECT_ID: ${{ secrets.VITE_WALLETCONNECT_PROJECT_ID }}
+      - name: Run tests
+        run: npm test

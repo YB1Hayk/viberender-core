@@ -1,0 +1,16 @@
+{
+  "name": "viberender-core",
+  "version": "0.1.0",
+  "description": "Smart contracts for VibeRender — decentralized GPU rendering on Base and Arbitrum",
+  "license": "MIT",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "build": "hardhat compile"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.1.0",
+    "hardhat": "^2.22.0"
+  }
+}

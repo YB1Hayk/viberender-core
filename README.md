@@ -1,27 +1,69 @@
 # viberender-core
 
-**Decentralized rendering infrastructure for 3D creators.**  
-Built on Base and Arbitrum. Powered by idle GPUs. Settled on-chain.
+**Decentralized GPU rendering infrastructure for 3D creators.**  
+Alpha MVP on Base + Arbitrum. Open source. Built in public.
 
-[![Status: Active Development](https://img.shields.io/badge/Status-Active%20Development-blue)]()
+[![CI](https://github.com/YB1Hayk/viberender-core/actions/workflows/ci.yml/badge.svg)](https://github.com/YB1Hayk/viberender-core/actions/workflows/ci.yml)
+[![Status: Alpha](https://img.shields.io/badge/Status-Alpha%20Testnet-orange)]()
 [![Network: Base + Arbitrum](https://img.shields.io/badge/Network-Base%20%2B%20Arbitrum-8B5CF6)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-## Mission
+## Live
+
+| Environment | URL | Status |
+|---|---|---|
+| Landing | [viberender-web.vercel.app](https://viberender-web.vercel.app) | Live |
+| App Dashboard | [vibe-render.vercel.app](https://vibe-render.vercel.app) | Alpha · Testnet |
+
+> **Alpha Transparency:** The current build uses Supabase for fast off-chain indexing and job state management while the full on-chain Layer-2 architecture is under development. Smart contract escrow is being implemented in parallel. No real funds are used — testnet only.
+
+---
+
+## What It Is
 
 VibeRender is a DePIN (Decentralized Physical Infrastructure Network) for 3D rendering.
 
-It connects independent artists and studios who need GPU compute with operators who have idle hardware — without a centralized intermediary setting prices or holding funds.
+It connects 3D artists who need GPU compute with independent operators who have idle hardware — without a centralized intermediary setting prices or holding funds.
 
-**The problem:** Cloud render farms charge 30–60% margin on top of hardware cost. They own your files while processing them, control pricing, and are single points of failure.
+**The problem:** Cloud render farms charge 30–60% margin on top of hardware cost. They control pricing, hold your files on their servers, and are single points of failure.
 
-**The solution:** A protocol that matches render jobs directly to GPU operators, with payment settled in USDC/USDT via non-custodial smart contracts on Base and Arbitrum. Trust is enforced by code, not vendor agreements.
+**The solution:** A direct-matching protocol where payment moves through non-custodial smart contracts on Base and Arbitrum. Trust is enforced by code, not vendor agreements.
 
-**Who it's for:**
-- 3D artists using Blender, Cinema 4D, Unreal Engine, or Houdini who find cloud rendering too expensive
-- GPU owners (gaming rigs, workstations) who want to monetize idle compute with on-chain, non-custodial payouts
+---
+
+## Architecture
+
+```
+  ┌──────────────┐         ┌─────────────────────────────────────┐
+  │   Designer   │         │           VibeRender Protocol        │
+  │  (3D Artist) │         │                                     │
+  └──────┬───────┘         │   ┌─────────────┐  ┌─────────────┐ │
+         │ Upload .blend    │   │  Dashboard  │  │  Supabase   │ │
+         │ + Lock Escrow   ─┼──▶│  (React +   │──│  (Off-chain │ │
+         │                  │   │   Wagmi)    │  │   indexing) │ │
+         │                  │   └──────┬──────┘  └─────────────┘ │
+         │                  │          │ createJob()              │
+         │                  │   ┌──────▼──────────────────────┐  │
+         │                  │   │    RenderEscrow.sol          │  │
+         │                  │   │    Base / Arbitrum L2        │  │
+         │                  │   │                              │  │
+         │                  │   │  ETH/USDC locked in escrow   │  │
+         │                  │   └──────┬──────────────────────┘  │
+         │                  │          │ job claimed              │
+         │                  └──────────┼──────────────────────── ┘
+         │                             │
+  ┌──────▼──────────────────────────── ▼──────┐
+  │              GPU Operator                  │
+  │  Downloads encrypted archive               │
+  │  Renders locally on own hardware           │
+  │  Submits frames → completeJob() called     │
+  │  USDC/ETH released atomically to wallet    │
+  └────────────────────────────────────────────┘
+```
+
+**Current state:** Job lifecycle (create → claim → render → payout) is functional end-to-end in the dashboard. On-chain escrow contract (`RenderEscrow.sol`) is in active development — currently off-chain state is mirrored in Supabase for alpha testing.
 
 ---
 
@@ -30,91 +72,114 @@ It connects independent artists and studios who need GPU compute with operators 
 | Layer | Technology |
 |---|---|
 | Frontend | React 18, TypeScript, Vite, TailwindCSS |
-| Web3 | Wagmi v2, Viem, RainbowKit, WalletConnect |
+| Web3 Client | Wagmi v2, Viem, RainbowKit, WalletConnect |
 | Auth | Supabase Auth (OAuth + Magic Link) |
 | Storage | Supabase Storage (encrypted per-job archives) |
-| Database | PostgreSQL via Supabase (RLS-enforced) |
-| L2 Networks | **Base Mainnet**, **Arbitrum One** |
-| Tokens | USDC, USDT (ERC-20, permit-based transfer) |
-| Smart Contracts | Solidity — RenderEscrow, JobRegistry, ProofVerifier |
-| 3D Integration | Blender 4.x, Cinema 4D, Unreal Engine 5, Houdini |
-| Deployment | Vercel (frontend), Supabase (backend) |
+| Off-chain Index | PostgreSQL via Supabase (RLS-enforced, transitional) |
+| L2 Networks | Base Mainnet, Arbitrum One |
+| Tokens | Native ETH + ERC-20 (USDC, USDT) |
+| Smart Contracts | Solidity ^0.8.20 — RenderEscrow, JobRegistry |
+| Contract Tooling | Hardhat, ethers.js |
+| 3D Integration | Blender 4.x, Cinema 4D, Unreal Engine 5 |
+| Deployment | Vercel (frontend) |
 
 ---
 
-## Architecture
+## Smart Contracts
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                   VibeRender Protocol                   │
-├───────────────────────┬─────────────────────────────────┤
-│   Frontend (React)    │   Smart Contracts (Solidity)    │
-│   Vite + TypeScript   │   RenderEscrow.sol              │
-│   RainbowKit + Wagmi  │   JobRegistry.sol               │
-│   Supabase Auth       │   ProofVerifier.sol             │
-├───────────────────────┴─────────────────────────────────┤
-│              L2 Settlement Layer                        │
-│              Base Mainnet + Arbitrum One                │
-│              USDC / USDT stablecoin payments            │
-├─────────────────────────────────────────────────────────┤
-│              Proof-of-Render                            │
-│   Frame hash verification before escrow release.       │
-│   Output submitted by operator → verified on-chain →   │
-│   escrow released atomically upon designer approval.   │
-└─────────────────────────────────────────────────────────┘
+contracts/
+└── RenderEscrow.sol    # Non-custodial escrow for render jobs
 ```
 
-**Core contracts:**
+### RenderEscrow.sol
 
-| Contract | Purpose |
-|---|---|
-| `RenderEscrow.sol` | Holds funds between job creation and verified delivery |
-| `JobRegistry.sol` | On-chain registry of render jobs, statuses, and parties |
-| `ProofVerifier.sol` | Validates frame submission hashes before escrow release |
+Holds native ETH (or ERC-20) between job creation and verified delivery. Three principals:
+
+- **Designer** — creates and funds the job
+- **Operator** — claims and completes the job
+- **Validator** — protocol-owned address that authorizes escrow release after frame verification
+
+Functions: `createJob` · `completeJob` · `refundJob`
+
+Deployment target: Base Sepolia (testnet) → Base Mainnet (Q4 2026 post-audit)
 
 ---
 
 ## Roadmap
 
-### Q2 2026 — Foundation ✅
-- [x] Core job lifecycle: upload → escrow → claim → render → payout
-- [x] Base + Arbitrum escrow support
-- [x] USDC + USDT payments
-- [x] Encrypted file vault (per-job access keys)
-- [x] Operator job board
-- [x] End-to-end alpha with real renders
+### Q2 2026 — Alpha MVP ✅
+- [x] End-to-end job lifecycle: upload → lock → claim → render → payout
+- [x] Base + Arbitrum network support
+- [x] USDC + USDT payment paths
+- [x] Encrypted per-job file vault (client-side encryption)
+- [x] Operator job board with real-time status
+- [x] Live alpha dashboard deployed to production
 
-### Q3 2026 — Reliability + Operator Growth
-- [ ] Operator reputation system (on-chain score per completed job)
+### Q3 2026 — On-chain Migration + Operator Tooling
+- [ ] `RenderEscrow.sol` deployed to Base Sepolia
+- [ ] Supabase off-chain state replaced by on-chain job registry
+- [ ] CLI client for operators (Docker-based, GPU auto-detection)
+- [ ] Operator reputation scoring (on-chain, per completed job)
+- [ ] Automated frame hash verification before escrow release
 - [ ] Batch job support (1 escrow → multiple frame ranges → N operators)
-- [ ] Dispute resolution (time-locked re-queue)
-- [ ] Automated frame verification (hash + visual diff)
-- [ ] Blender plugin for one-click job submission
 
-### Q4 2026 — Scale + Ecosystem
-- [ ] Native cross-chain settlement
-- [ ] Unreal Engine 5 and Cinema 4D job support
-- [ ] Operator node software (Docker-based, GPU auto-detection)
-- [ ] Public API for render job submission
-- [ ] Grant applications: Base Ecosystem Fund, Arbitrum LTIPP
+### Q4 2026 — Security Audits + Mainnet
+- [ ] External smart contract security audit (targeting Zellic / Spearbit)
+- [ ] Base Mainnet deployment
+- [ ] Arbitrum One deployment
+- [ ] Public REST API for programmatic job submission
+- [ ] Blender plugin for one-click project upload
+- [ ] Dispute resolution mechanism (time-locked re-queue)
 
 ---
 
-## Live App
+## Development
 
-[vibe-render.vercel.app](https://vibe-render.vercel.app) — alpha, testnet only
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Install
+
+```bash
+git clone https://github.com/YB1Hayk/viberender-core.git
+cd viberender-core
+npm install
+```
+
+### Compile contracts
+
+```bash
+npm run compile
+```
+
+### Run tests
+
+```bash
+npm test
+```
 
 ---
 
 ## Contributing
 
-**Status: Active Development — alpha stage.**
-
-The core protocol loop is functional. We're actively working on operator tooling, verification, and contract hardening.
+Alpha stage — core protocol loop is functional. We're hardening contracts, building operator tooling, and moving job state fully on-chain.
 
 - Report bugs via [GitHub Issues](../../issues)
-- Propose protocol improvements via [Discussions](../../discussions)
-- Audit the escrow contract logic (formal audit planned Q3 2026)
+- Protocol improvements via [Discussions](../../discussions)
+- Smart contract review welcome — formal audit planned Q4 2026
+
+---
+
+## Grant Applications
+
+VibeRender is applying for:
+- **Base Ecosystem Fund** — native Base deployment, USDC settlement
+- **Arbitrum LTIPP** — Arbitrum One deployment, cross-chain job routing
+
+If you're a grant committee reviewer: the live alpha is at [vibe-render.vercel.app](https://vibe-render.vercel.app). End-to-end job flow works today on testnet.
 
 ---
 

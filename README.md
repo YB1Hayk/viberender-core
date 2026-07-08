@@ -4,8 +4,8 @@
 Alpha MVP on Base + Arbitrum. Open source. Built in public.
 
 [![CI](https://github.com/YB1Hayk/viberender-core/actions/workflows/ci.yml/badge.svg)](https://github.com/YB1Hayk/viberender-core/actions/workflows/ci.yml)
-[![Status: Alpha](https://img.shields.io/badge/Status-Alpha%20Testnet-orange)]()
-[![Network: Base + Arbitrum](https://img.shields.io/badge/Network-Base%20%2B%20Arbitrum-8B5CF6)]()
+[![Status: Alpha](https://img.shields.io/badge/Status-Alpha%20Live-brightgreen)]()
+[![Deployed: Base Mainnet](https://img.shields.io/badge/Deployed-Base%20Mainnet-0052FF)](https://basescan.org/address/0x2b46B53b7A604Ea9Fc8E00222De50d1421274b87)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
@@ -15,9 +15,16 @@ Alpha MVP on Base + Arbitrum. Open source. Built in public.
 | Environment | URL | Status |
 |---|---|---|
 | Landing | [viberender-web.vercel.app](https://viberender-web.vercel.app) | Live |
-| App Dashboard | [vibe-render.vercel.app](https://vibe-render.vercel.app) | Alpha · Testnet |
+| App Dashboard | [vibe-render.vercel.app](https://vibe-render.vercel.app) | Alpha · Live |
 
-> **Alpha Transparency:** The current build uses Supabase for fast off-chain indexing and job state management while the full on-chain Layer-2 architecture is under development. Smart contract escrow is being implemented in parallel. No real funds are used — testnet only.
+### On-chain (Base Mainnet)
+
+| Contract | Address |
+|---|---|
+| RenderEscrow | [`0x2b46…4b87`](https://basescan.org/address/0x2b46B53b7A604Ea9Fc8E00222De50d1421274b87) |
+| JobRegistry | [`0xeA79…dAdB`](https://basescan.org/address/0xeA795aF3A07A859cF97c52f5a8EE89494BB4dAdB) |
+
+> **Alpha Transparency:** Escrow and job-registry contracts are **live on Base Mainnet**. Job metadata and file state are indexed off-chain via Supabase for speed while the full on-chain indexing layer is built out. Escrow amounts during alpha are intentionally symbolic (~$0.05/job). Contracts are unaudited — a formal audit is planned before scaling escrow values.
 
 ---
 

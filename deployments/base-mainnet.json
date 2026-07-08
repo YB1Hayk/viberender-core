@@ -1,0 +1,18 @@
+{
+  "network": "base",
+  "chainId": 8453,
+  "deployedAt": "2026-07-07",
+  "deployer": "0x9279E896328Ab8daeCB4ae4136a7134Bbc502CD0",
+  "contracts": {
+    "RenderEscrow": {
+      "address": "0x2b46B53b7A604Ea9Fc8E00222De50d1421274b87",
+      "constructorArgs": ["0x9279E896328Ab8daeCB4ae4136a7134Bbc502CD0"],
+      "explorer": "https://basescan.org/address/0x2b46B53b7A604Ea9Fc8E00222De50d1421274b87"
+    },
+    "JobRegistry": {
+      "address": "0xeA795aF3A07A859cF97c52f5a8EE89494BB4dAdB",
+      "constructorArgs": ["0x9279E896328Ab8daeCB4ae4136a7134Bbc502CD0"],
+      "explorer": "https://basescan.org/address/0xeA795aF3A07A859cF97c52f5a8EE89494BB4dAdB"
+    }
+  }
+}

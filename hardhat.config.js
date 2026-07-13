@@ -3,6 +3,22 @@ require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
+  sourcify: { enabled: false },
+  etherscan: {
+    apiKey: {
+      base: process.env.BASESCAN_API_KEY || "blockscout",
+    },
+    customChains: [
+      {
+        network: "base",
+        chainId: 8453,
+        urls: {
+          apiURL: "https://base.blockscout.com/api",
+          browserURL: "https://base.blockscout.com",
+        },
+      },
+    ],
+  },
   solidity: {
     version: "0.8.20",
     settings: {

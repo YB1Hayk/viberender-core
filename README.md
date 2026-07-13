@@ -19,10 +19,10 @@ Alpha MVP on Base + Arbitrum. Open source. Built in public.
 
 ### On-chain (Base Mainnet)
 
-| Contract | Address |
-|---|---|
-| RenderEscrow | [`0x2b46…4b87`](https://basescan.org/address/0x2b46B53b7A604Ea9Fc8E00222De50d1421274b87) |
-| JobRegistry | [`0xeA79…dAdB`](https://basescan.org/address/0xeA795aF3A07A859cF97c52f5a8EE89494BB4dAdB) |
+| Contract | Address | Source |
+|---|---|---|
+| RenderEscrow | [`0x2b46…4b87`](https://basescan.org/address/0x2b46B53b7A604Ea9Fc8E00222De50d1421274b87) | [verified ✓](https://base.blockscout.com/address/0x2b46B53b7A604Ea9Fc8E00222De50d1421274b87#code) |
+| JobRegistry | [`0xeA79…dAdB`](https://basescan.org/address/0xeA795aF3A07A859cF97c52f5a8EE89494BB4dAdB) | [verified ✓](https://base.blockscout.com/address/0xeA795aF3A07A859cF97c52f5a8EE89494BB4dAdB#code) |
 
 > **Alpha Transparency:** Escrow and job-registry contracts are **live on Base Mainnet**. Job metadata and file state are indexed off-chain via Supabase for speed while the full on-chain indexing layer is built out. Escrow amounts during alpha are intentionally symbolic (~$0.05/job). Contracts are unaudited — a formal audit is planned before scaling escrow values.
 

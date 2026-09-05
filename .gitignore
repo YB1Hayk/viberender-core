@@ -20,3 +20,7 @@ coverage.json
 .idea/
 *.swp
 .DS_Store
+
+# Hardhat local dirs (sandbox)
+.hardhat-local/
+.hardhat-config/

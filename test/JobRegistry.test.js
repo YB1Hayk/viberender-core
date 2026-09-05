@@ -149,6 +149,56 @@ describe("JobRegistry", function () {
   });
 
   // ─────────────────────────────────────────────────────────────────────────
+  // setEscrow (owner only)
+  // ─────────────────────────────────────────────────────────────────────────
+
+  describe("setEscrow", function () {
+    it("links the escrow contract and emits event", async function () {
+      await expect(registry.connect(owner).setEscrow(other.address))
+        .to.emit(registry, "EscrowUpdated")
+        .withArgs(ethers.ZeroAddress, other.address);
+      expect(await registry.escrow()).to.equal(other.address);
+    });
+
+    it("reverts if caller is not owner", async function () {
+      await expect(
+        registry.connect(other).setEscrow(other.address)
+      ).to.be.revertedWithCustomError(registry, "OwnableUnauthorizedAccount");
+    });
+
+    it("reverts for zero address", async function () {
+      await expect(
+        registry.connect(owner).setEscrow(ethers.ZeroAddress)
+      ).to.be.revertedWithCustomError(registry, "ZeroAddress");
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // isProofValid
+  // ─────────────────────────────────────────────────────────────────────────
+
+  describe("isProofValid", function () {
+    beforeEach(async function () {
+      await registry.connect(designer).registerJob(JOB_ID, META_HASH);
+    });
+
+    it("returns false before proof is submitted", async function () {
+      expect(await registry.isProofValid(JOB_ID, PROOF_HASH)).to.equal(false);
+    });
+
+    it("returns true for the submitted proof hash", async function () {
+      await registry.connect(prover).submitProof(JOB_ID, operator.address, PROOF_HASH);
+      expect(await registry.isProofValid(JOB_ID, PROOF_HASH)).to.equal(true);
+    });
+
+    it("returns false for a wrong hash", async function () {
+      await registry.connect(prover).submitProof(JOB_ID, operator.address, PROOF_HASH);
+      const wrong = ethers.keccak256(ethers.toUtf8Bytes("wrong"));
+      expect(await registry.isProofValid(JOB_ID, wrong)).to.equal(false);
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────
   // setProver (owner only)
   // ─────────────────────────────────────────────────────────────────────────
 

@@ -6,11 +6,11 @@
 
 **Q: What stage is your project at?**
 
-Live alpha on mainnet. Escrow and registry contracts are deployed and source-verified on Base Mainnet; the dApp supports the full job lifecycle (upload → escrow → claim → render → payout). Escrow values are intentionally symbolic until we complete a security audit.
+Live alpha. Escrow and registry contracts are deployed and source-verified on Base Mainnet; the dApp supports the full job lifecycle (upload → escrow lock → claim → render → payout) with job state indexed off-chain. Escrow values are intentionally symbolic until we complete a security audit, and no live escrow jobs have been processed yet — redeploying the hardened contracts (proof-gate, cancel window) and processing the first on-chain jobs is the immediate milestone.
 
 **Q: Is your code open source?**
 
-Yes, MIT license. Contracts: github.com/YB1Hayk/viberender-core (30+ Hardhat tests, GitHub Actions CI). Frontend: github.com/YB1Hayk/vibe-render.
+Yes, MIT license. Contracts: github.com/YB1Hayk/viberender-core (65 Hardhat tests, GitHub Actions CI). Frontend: github.com/YB1Hayk/vibe-render.
 
 **Q: How many users do you have?**
 
@@ -18,7 +18,7 @@ Early alpha — first registered designers and GPU operators onboarding through 
 
 **Q: What is your business model?**
 
-A 3% protocol fee on each render job. Operators keep the rest — versus 30–60% margin taken by centralized farms.
+A 3% protocol fee on each render job. Operators keep the rest — versus 30–60% margin taken by centralized farms. Settlement is native ETH today; USDC/USDT paths are on the roadmap.
 
 **Q: Who are your competitors and how are you different?**
 

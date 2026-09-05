@@ -39,19 +39,21 @@ VibeRender is in Alpha. A formal bug bounty program will launch alongside the ma
 
 The following are **known design decisions**, not vulnerabilities:
 
-1. **Validator is a single EOA** — The `validator` role in `RenderEscrow.sol` is currently a single externally owned address. Before mainnet, this will be replaced by a multi-sig or ZK verifier contract.
+1. **Validator is a single EOA** — The `validator` role in `RenderEscrow.sol` and the `prover` role in `JobRegistry.sol` are currently the deployer's externally owned address. Before scaling escrow values, these roles must be transferred to a multi-sig (`setValidator` / `setProver`) or replaced by a ZK verifier contract.
 
-2. **No ERC-20 support yet** — `RenderEscrow.sol` accepts only native ETH. USDC/USDT payment paths are in development.
+2. **No ERC-20 support yet** — `RenderEscrow.sol` accepts only native ETH. USDC/USDT payment paths are on the roadmap (Q3 2026).
 
-3. **No formal audit** — The contracts have not been professionally audited. A security audit is planned for Q3 2026 before any mainnet deployment. **Do not use with real funds on mainnet.**
+3. **No formal audit** — The contracts have not been professionally audited. **Do not use with real funds.** The proof-gate (`submitProof` required before `completeJob`) and the 3-day cancel window are the first hardening steps; an external audit precedes any escrow-value scaling.
 
-4. **Proof-of-Render is centralized** — The `prover` in `JobRegistry.sol` is protocol-controlled. Decentralized verification via ZK proofs is a Q4 2026 goal.
+4. **Proof verification is centralized** — The validator submits proof hashes trusted off-chain verification. Fully on-chain or ZK-based render verification is a Q4 2026 goal. `JobRegistry.isProofValid` exposes the on-chain check the escrow consults.
+
+5. **Cancel window, not dispute resolution** — A designer can reclaim a locked job's funds after `cancelWindow` (3 days default). A full dispute-resolution mechanism (time-locked re-queue, arbitration) is planned.
 
 ## Audit Status
 
 | Date | Auditor | Scope | Report |
 |---|---|---|---|
-| — | — | Pending Q3 2026 | — |
+| — | — | Pending (pre-redeployment) | — |
 
 ## Disclosure Policy
 

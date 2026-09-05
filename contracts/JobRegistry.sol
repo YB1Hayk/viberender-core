@@ -54,6 +54,9 @@ contract JobRegistry is Ownable {
     ///         In production: a validator node or ZK verifier contract.
     address public prover;
 
+    /// @notice RenderEscrow contract allowed to read/verify proofs.
+    address public escrow;
+
     // ─────────────────────────────────────────────────────────────────────────
     // Events
     // ─────────────────────────────────────────────────────────────────────────
@@ -61,6 +64,7 @@ contract JobRegistry is Ownable {
     event JobRegistered(uint256 indexed jobId, address indexed designer, bytes32 metadataHash);
     event ProofSubmitted(uint256 indexed jobId, address indexed operator, bytes32 proofHash);
     event ProverUpdated(address indexed previous, address indexed next);
+    event EscrowUpdated(address indexed previous, address indexed next);
 
     // ─────────────────────────────────────────────────────────────────────────
     // Errors
@@ -70,6 +74,8 @@ contract JobRegistry is Ownable {
     error NotRegistered(uint256 jobId);
     error ProofAlreadySubmitted(uint256 jobId);
     error NotProver();
+    error NotEscrow();
+    error ZeroAddress();
 
     // ─────────────────────────────────────────────────────────────────────────
     // Constructor
@@ -78,6 +84,15 @@ contract JobRegistry is Ownable {
     constructor(address _prover) Ownable(msg.sender) {
         require(_prover != address(0), "Zero prover");
         prover = _prover;
+    }
+
+    /**
+     * @notice Link the RenderEscrow contract (one-time admin action).
+     */
+    function setEscrow(address _escrow) external onlyOwner {
+        if (_escrow == address(0)) revert ZeroAddress();
+        emit EscrowUpdated(escrow, _escrow);
+        escrow = _escrow;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -148,6 +163,16 @@ contract JobRegistry is Ownable {
 
     function getRecord(uint256 jobId) external view returns (JobRecord memory) {
         return records[jobId];
+    }
+
+    /**
+     * @notice Verify a proof as RenderEscrow sees it: the job must have a
+     *         submitted proof matching the given hash. Callable by anyone;
+     *         the escrow contract consults this before releasing funds.
+     */
+    function isProofValid(uint256 jobId, bytes32 proofHash) external view returns (bool) {
+        JobRecord storage rec = records[jobId];
+        return rec.proofSubmitted && rec.proofHash == proofHash;
     }
 
     /**

@@ -96,20 +96,39 @@ It connects 3D artists who need GPU compute with independent operators who have 
 
 ```
 contracts/
-└── RenderEscrow.sol    # Non-custodial escrow for render jobs
+├── RenderEscrow.sol            # Non-custodial escrow for render jobs
+└── JobRegistry.sol             # On-chain metadata + Proof-of-Render registry
 ```
 
 ### RenderEscrow.sol
 
-Holds native ETH (or ERC-20) between job creation and verified delivery. Three principals:
+Holds native ETH between job creation and verified delivery. Three principals:
 
 - **Designer** — creates and funds the job
 - **Operator** — claims and completes the job
-- **Validator** — protocol-owned address that authorizes escrow release after frame verification
+- **Validator** — protocol address that submits the Proof-of-Render hash and releases escrow
 
-Functions: `createJob` · `completeJob` · `refundJob`
+Functions: `createJob` · `lockJob` · `submitProof` · `completeJob` · `refundJob` · `cancelJob`
 
-Deployment target: Base Sepolia (testnet) → Base Mainnet (Q4 2026 post-audit)
+Safety mechanisms:
+- **Proof gate** — `completeJob` reverts unless a Proof-of-Render hash was submitted (`proofRequired = true` by default)
+- **Cancel window** — the designer cannot refund a locked job for `cancelWindow` (3 days default), so a rendering operator is not blindsided
+- **ReentrancyGuard** on all ETH-moving functions
+
+Payment: **native ETH only** (ERC-20/USDC path is on the roadmap).
+
+### JobRegistry.sol
+
+Content-addressed commitments: `registerJob(jobId, metadataHash)` by the designer,
+`submitProof(jobId, operator, proofHash)` by the prover, plus on-chain verification
+helpers (`verifyMetadata`, `verifyProof`, `isProofValid`).
+
+### Deployment status
+
+Contracts are **live on Base Mainnet** (source-verified, links at the top of this README).
+Escrow amounts are intentionally symbolic (~$0.05/job) until the external audit.
+The currently deployed mainnet contracts are the pre-hardening version; the
+proof-gate and cancel-window changes are queued for redeployment after review.
 
 ---
 
@@ -124,12 +143,14 @@ Deployment target: Base Sepolia (testnet) → Base Mainnet (Q4 2026 post-audit)
 - [x] Live alpha dashboard deployed to production
 
 ### Q3 2026 — On-chain Migration + Operator Tooling
-- [ ] `RenderEscrow.sol` deployed to Base Sepolia
+- [x] `RenderEscrow.sol` proof-gate (`submitProof` → `completeJob`) + cancel window
+- [ ] Redeploy hardened contracts to Base (current mainnet contracts are pre-hardening)
 - [ ] Supabase off-chain state replaced by on-chain job registry
 - [ ] CLI client for operators (Docker-based, GPU auto-detection)
 - [ ] Operator reputation scoring (on-chain, per completed job)
 - [ ] Automated frame hash verification before escrow release
 - [ ] Batch job support (1 escrow → multiple frame ranges → N operators)
+- [ ] ERC-20 (USDC/USDT) escrow path
 
 ### Q4 2026 — Security Audits + Mainnet
 - [ ] External smart contract security audit (targeting Zellic / Spearbit)
@@ -183,10 +204,10 @@ Alpha stage — core protocol loop is functional. We're hardening contracts, bui
 ## Grant Applications
 
 VibeRender is applying for:
-- **Base Ecosystem Fund** — native Base deployment, USDC settlement
-- **Arbitrum LTIPP** — Arbitrum One deployment, cross-chain job routing
+- **Base Ecosystem Fund / Base Builder Grants** — native Base deployment, audit funding
+- **Arbitrum Questbook / LTIPP** — Arbitrum One deployment, cross-chain job routing
 
-If you're a grant committee reviewer: the live alpha is at [vibe-render.vercel.app](https://vibe-render.vercel.app). End-to-end job flow works today on testnet.
+If you're a grant committee reviewer: the live alpha is at [vibe-render.vercel.app](https://vibe-render.vercel.app). Full details in [`docs/grants/`](docs/grants/).
 
 ---
 

@@ -20,7 +20,7 @@ What is already live:
 - RenderEscrow and JobRegistry contracts deployed and source-verified on Base Mainnet (links below)
 - Working alpha dApp with the full job lifecycle: upload → escrow lock → claim → render → payout
 - Encrypted per-job file vault, operator job board, wallet-native auth (wagmi + RainbowKit)
-- Open-source monorepo with 30+ contract tests and CI
+- Open-source monorepo with 65 contract tests and CI
 
 Base is our home chain: sub-cent fees make per-job micro-escrow viable, and Coinbase onramps lower friction for artists who have never used crypto. Escrow amounts are intentionally symbolic during alpha until we complete a formal audit — that is the next milestone this grant accelerates.
 

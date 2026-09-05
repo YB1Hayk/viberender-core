@@ -32,10 +32,10 @@ A direct-matching protocol: artists lock payment in a smart-contract escrow, GPU
 | Landing | https://viberender-web.vercel.app |
 | RenderEscrow — **verified on Base Mainnet** | https://base.blockscout.com/address/0x2b46B53b7A604Ea9Fc8E00222De50d1421274b87#code |
 | JobRegistry — **verified on Base Mainnet** | https://base.blockscout.com/address/0xeA795aF3A07A859cF97c52f5a8EE89494BB4dAdB#code |
-| Contracts repo (30+ tests, CI) | https://github.com/YB1Hayk/viberender-core |
+| Contracts repo (65 tests, CI) | https://github.com/YB1Hayk/viberender-core |
 | dApp repo | https://github.com/YB1Hayk/vibe-render |
 
-Status: working end-to-end job lifecycle (upload → escrow → claim → render → payout) in production alpha. Escrow amounts are intentionally symbolic (~$0.05/job) until a formal audit.
+Status: working end-to-end job lifecycle (upload → escrow lock → claim → render → payout) in production alpha; job state is indexed off-chain (Supabase) while on-chain indexing is built out. Escrow amounts are intentionally symbolic (~$0.05/job, native ETH) until a formal audit. Contracts have not yet processed live escrow jobs — that is the next milestone after redeploying the hardened versions (proof-gate + cancel window).
 
 ---
 
@@ -44,7 +44,7 @@ Status: working end-to-end job lifecycle (upload → escrow → claim → render
 - Contracts are **already live on Base Mainnet** — not a promise, a fact.
 - Sub-cent transaction fees make micro-escrow per render job economically viable — impossible on L1.
 - Target users are individual artists and gamers with idle GPUs: Coinbase onramp + Base Account lower onboarding friction for a non-crypto-native audience.
-- USDC on Base is the planned settlement currency for job payments.
+- Settlement today is native ETH; USDC is the planned settlement currency after the ERC-20 escrow milestone.
 
 ## Why Arbitrum (для Questbook-форм)
 

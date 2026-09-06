@@ -4,9 +4,13 @@
 Alpha MVP on Base + Arbitrum. Open source. Built in public.
 
 [![CI](https://github.com/YB1Hayk/viberender-core/actions/workflows/ci.yml/badge.svg)](https://github.com/YB1Hayk/viberender-core/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/tests-65%20passing-success)](CHANGELOG.md)
 [![Status: Alpha](https://img.shields.io/badge/Status-Alpha%20Live-brightgreen)]()
 [![Deployed: Base Mainnet](https://img.shields.io/badge/Deployed-Base%20Mainnet-0052FF)](https://basescan.org/address/0x2b46B53b7A604Ea9Fc8E00222De50d1421274b87)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+> 📋 **Development journal:** [CHANGELOG.md](CHANGELOG.md) — что сделано, что в работе.
+> Сейчас: security hardening (proof-gate + cancel window, 65 тестов), редеплой на Base готовится.
 
 ---
 
